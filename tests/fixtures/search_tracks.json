@@ -1,0 +1,72 @@
+{
+  "tracks": {
+    "href": "https://api.spotify.com/v1/search?type=track&q=halsey&limit=2",
+    "items": [
+      {
+        "id": "track_one_id",
+        "name": "Without Me",
+        "uri": "spotify:track:track_one_id",
+        "duration_ms": 201661,
+        "popularity": 88,
+        "explicit": true,
+        "preview_url": null,
+        "track_number": 1,
+        "available_markets": ["US", "GB", "DE", "FR"],
+        "external_urls": {"spotify": "https://open.spotify.com/track/track_one_id"},
+        "artists": [
+          {
+            "id": "halsey_id",
+            "name": "Halsey",
+            "uri": "spotify:artist:halsey_id",
+            "external_urls": {"spotify": "https://open.spotify.com/artist/halsey_id"}
+          }
+        ],
+        "album": {
+          "id": "album_one_id",
+          "name": "Manic",
+          "uri": "spotify:album:album_one_id",
+          "release_date": "2020-01-17",
+          "total_tracks": 16,
+          "external_urls": {"spotify": "https://open.spotify.com/album/album_one_id"},
+          "images": [
+            {"url": "https://i.scdn.co/image/x", "height": 640, "width": 640},
+            {"url": "https://i.scdn.co/image/y", "height": 300, "width": 300}
+          ]
+        }
+      },
+      {
+        "id": "track_two_id",
+        "name": "Bad at Love",
+        "uri": "spotify:track:track_two_id",
+        "duration_ms": 180000,
+        "popularity": 79,
+        "explicit": false,
+        "preview_url": null,
+        "track_number": 4,
+        "available_markets": ["US", "GB"],
+        "external_urls": {"spotify": "https://open.spotify.com/track/track_two_id"},
+        "artists": [
+          {
+            "id": "halsey_id",
+            "name": "Halsey",
+            "uri": "spotify:artist:halsey_id",
+            "external_urls": {"spotify": "https://open.spotify.com/artist/halsey_id"}
+          }
+        ],
+        "album": {
+          "id": "album_two_id",
+          "name": "hopeless fountain kingdom",
+          "uri": "spotify:album:album_two_id",
+          "release_date": "2017-06-02",
+          "total_tracks": 13,
+          "external_urls": {"spotify": "https://open.spotify.com/album/album_two_id"}
+        }
+      }
+    ],
+    "limit": 2,
+    "next": "https://api.spotify.com/v1/search?offset=2&limit=2&q=halsey&type=track",
+    "offset": 0,
+    "previous": null,
+    "total": 1234
+  }
+}

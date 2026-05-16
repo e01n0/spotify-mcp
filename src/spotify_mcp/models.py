@@ -144,7 +144,7 @@ class Track(BaseModel):
     id: str
     name: str
     artists: list[str]
-    album: str | None = None
+    album_name: str | None = None
     duration_ms: int | None = None
     uri: str
 
@@ -155,7 +155,7 @@ class Track(BaseModel):
             id=str(payload["id"]),
             name=str(payload["name"]),
             artists=_names(payload.get("artists")),
-            album=album.get("name"),
+            album_name=album.get("name"),
             duration_ms=payload.get("duration_ms"),
             uri=str(payload["uri"]),
         )
