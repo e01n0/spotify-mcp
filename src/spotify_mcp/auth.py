@@ -21,7 +21,7 @@ from typing import Any
 import httpx
 
 AUTHORIZE_URL = "https://accounts.spotify.com/authorize"
-TOKEN_URL = "https://accounts.spotify.com/api/token"  # noqa: S105 — public OAuth endpoint
+TOKEN_URL = "https://accounts.spotify.com/api/token"
 DEFAULT_TIMEOUT_S = 120.0
 
 
@@ -111,7 +111,7 @@ class PKCEFlow:
         captured: dict[str, str] = {}
 
         class _Handler(BaseHTTPRequestHandler):
-            def do_GET(self) -> None:  # noqa: N802 — stdlib signature
+            def do_GET(self) -> None:
                 parsed = urllib.parse.urlparse(self.path)
                 qs = urllib.parse.parse_qs(parsed.query)
                 if "code" in qs:
@@ -129,7 +129,7 @@ class PKCEFlow:
                     self.send_response(404)
                     self.end_headers()
 
-            def log_message(self, format: str, *args: Any) -> None:  # noqa: A002 — stdlib signature
+            def log_message(self, format: str, *args: Any) -> None:
                 # Suppress default stderr noise from BaseHTTPRequestHandler.
                 return
 
