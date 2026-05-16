@@ -133,6 +133,22 @@ The auth flow requests these scopes on the consent screen:
 
 **Keyring backend missing on headless Linux** — Install a backend (e.g. `python-keyring/keyrings.alt`) or use the Secret Service via `gnome-keyring-daemon --start --components=secrets`. The server intentionally refuses to fall back to plaintext-on-disk.
 
+## Skills
+
+The repo ships three workflow skills under [`skills/`](skills/) that drive these tools from natural-language requests in Claude:
+
+- **`spotify-playback`** — play/pause/skip/queue/volume/seek/devices
+- **`spotify-playlist`** — create, list, add/remove tracks, rename
+- **`spotify-mood-mix`** — generate playlists from a vibe description
+
+Install with:
+
+```bash
+cp -r skills/spotify-* ~/.claude/skills/
+```
+
+See [`skills/README.md`](skills/README.md) for details.
+
 ## Architecture
 
 Seven modules, no cycles:
