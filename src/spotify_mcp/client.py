@@ -18,6 +18,12 @@ from spotify_mcp.storage import Storage
 BASE_URL = "https://api.spotify.com/v1"
 DEFAULT_TIMEOUT_S = 15.0
 
+# Spotify's Retry-After can legitimately be HOURS or even days when their dev-mode
+# rate limiter punishes an app. Community-confirmed values: 21h, 49000s, even 48h.
+# We refuse to silently sleep that long — surface the requested wait so the caller
+# can decide. 60s caps it at "tool feels slow" not "tool freezes the MCP session".
+MAX_RETRY_AFTER_SLEEP_S = 60.0
+
 
 class AuthenticationError(Exception):
     """Still 401 after a single token refresh — caller must re-auth."""
@@ -92,6 +98,15 @@ class SpotifyClient:
                 )
         elif resp.status_code == 429:
             retry_after = float(resp.headers.get("Retry-After", "1"))
+            if retry_after > MAX_RETRY_AFTER_SLEEP_S:
+                # Don't silently wait hours. Surface immediately so the caller
+                # (LLM/user) sees the real cost and can decide to abandon or
+                # wait deliberately at a higher level.
+                raise RateLimitError(
+                    f"Rate-limited on {method} {path} with Retry-After={retry_after}s "
+                    f"(exceeds {MAX_RETRY_AFTER_SLEEP_S}s cap — refusing to wait silently). "
+                    f"Spotify dev-mode has punished this app; back off and retry later."
+                )
             await asyncio.sleep(retry_after)
             resp = await send()
             if resp.status_code == 429:
@@ -251,11 +266,14 @@ class SpotifyClient:
     # ---- library (Liked Songs) ----
 
     async def save_tracks_to_library(self, track_ids: list[str]) -> dict[str, Any]:
-        # Spotify accepts up to 50 IDs per call. Caller batches.
+        # PUT /v1/me/library is the Feb-2026 consolidated endpoint. The legacy
+        # PUT /v1/me/tracks now returns 403 Forbidden with no useful message
+        # (NOT 404, NOT a deprecation header — Spotify just slams the door).
+        # The new endpoint takes `uris` (plural, prefixed) in query string, NOT `ids`
+        # in JSON body. Learned the hard way: probed 6 shapes, only this works.
         if not track_ids:
             return {}
         if len(track_ids) > 50:
             raise ValueError(f"save_tracks_to_library: max 50 ids per call, got {len(track_ids)}")
-        return await self._request(
-            "PUT", "/me/tracks", params={"ids": ",".join(track_ids)}
-        )
+        uris = ",".join(f"spotify:track:{tid}" for tid in track_ids)
+        return await self._request("PUT", "/me/library", params={"uris": uris})

@@ -48,7 +48,9 @@ async def _run_auth() -> None:
     )
 
     flow = PKCEFlow(client_id, callback_port=port)
-    tokens = await flow.run_authorization(DEFAULT_SCOPES)
+    # Generous timeout: this is a one-shot interactive flow, humans get distracted,
+    # the cost of a too-tight window is making them re-run the whole thing.
+    tokens = await flow.run_authorization(DEFAULT_SCOPES, timeout_s=600.0)
     refresh_token = tokens.get("refresh_token")
     if not refresh_token:
         print(

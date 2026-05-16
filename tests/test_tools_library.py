@@ -30,10 +30,15 @@ async def client(
 
 
 @respx.mock
-async def test_save_tracks_to_library_uses_me_tracks_with_ids_param(
+async def test_save_tracks_to_library_uses_me_library_with_uri_param(
     client: SpotifyClient,
 ) -> None:
-    route = respx.put("https://api.spotify.com/v1/me/tracks").mock(
+    """Feb-2026: PUT /me/library?uris=spotify:track:id1,spotify:track:id2,...
+
+    The legacy /me/tracks PUT now returns 403; library writes consolidated to
+    /me/library. Format requires URI-prefixed values in `uris` query (not `ids`).
+    """
+    route = respx.put("https://api.spotify.com/v1/me/library").mock(
         return_value=httpx.Response(200),
     )
 
@@ -43,14 +48,18 @@ async def test_save_tracks_to_library_uses_me_tracks_with_ids_param(
     )
 
     call = route.calls.last
-    assert call.request.url.path == "/v1/me/tracks"
-    # IDs go in the query string as comma-separated, not in a JSON body
-    assert "ids=track_one%2Ctrack_two%2Ctrack_three" in str(call.request.url)
+    assert call.request.url.path == "/v1/me/library"
+    # URIs go in the `uris` query param, comma-separated, with spotify:track: prefix
+    url = str(call.request.url)
+    assert "uris=" in url
+    assert "spotify%3Atrack%3Atrack_one" in url
+    assert "spotify%3Atrack%3Atrack_two" in url
+    assert "spotify%3Atrack%3Atrack_three" in url
 
 
 @respx.mock
 async def test_save_tracks_to_library_reports_count(client: SpotifyClient) -> None:
-    respx.put("https://api.spotify.com/v1/me/tracks").mock(
+    respx.put("https://api.spotify.com/v1/me/library").mock(
         return_value=httpx.Response(200),
     )
 

@@ -115,3 +115,31 @@ async def test_client_raises_after_second_429(
 
     with pytest.raises(RateLimitError):
         await client._request("GET", "/me")
+
+
+@respx.mock
+async def test_client_raises_immediately_on_excessive_retry_after(
+    client: SpotifyClient,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Retry-After > MAX_RETRY_AFTER_SLEEP_S (60s) must NOT sleep silently.
+
+    Spotify dev-mode can return Retry-After: 68707 (19h). Silently sleeping that
+    long would freeze the MCP session forever — the LLM/user needs to know.
+    """
+    sleeps: list[float] = []
+
+    async def fake_sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+
+    monkeypatch.setattr("spotify_mcp.client.asyncio.sleep", fake_sleep)
+
+    respx.get("https://api.spotify.com/v1/me").mock(
+        return_value=httpx.Response(429, headers={"Retry-After": "68707"}),
+    )
+
+    with pytest.raises(RateLimitError, match="68707"):
+        await client._request("GET", "/me")
+
+    # CRITICAL: no sleep was attempted — we never let asyncio.sleep(68707) happen
+    assert sleeps == []
