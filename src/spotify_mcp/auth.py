@@ -70,6 +70,10 @@ class PKCEFlow:
         return f"http://127.0.0.1:{self._port}/callback"
 
     def build_authorize_url(self, scopes: list[str], verifier: str) -> str:
+        # show_dialog=true forces Spotify to display the consent screen even if
+        # the user previously approved the app — without it Spotify may silently
+        # reuse a prior consent with a REDUCED scope set, leading to mystery 403s
+        # on later write calls. Cost: one extra click. Benefit: explicit scope grant.
         params = {
             "client_id": self._client_id,
             "response_type": "code",
@@ -77,6 +81,7 @@ class PKCEFlow:
             "scope": " ".join(scopes),
             "code_challenge_method": "S256",
             "code_challenge": self.challenge_for(verifier),
+            "show_dialog": "true",
         }
         return f"{AUTHORIZE_URL}?{urllib.parse.urlencode(params)}"
 

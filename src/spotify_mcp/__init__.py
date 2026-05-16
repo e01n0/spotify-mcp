@@ -59,7 +59,23 @@ async def _run_auth() -> None:
         sys.exit(2)
 
     Storage(client_id).set_refresh_token(str(refresh_token))
+
+    # Surface the actual GRANTED scopes — they may be a subset of what we requested
+    # if the user denied any during consent. Mismatch here is the #1 source of
+    # mystery 403s on later tool calls.
+    granted = str(tokens.get("scope", "")).split()
+    requested = set(DEFAULT_SCOPES)
+    missing = requested - set(granted)
+
     print("Refresh token saved to OS keychain. Spotify-mcp is ready to use.")
+    print(f"  Granted scopes ({len(granted)}): {', '.join(sorted(granted))}")
+    if missing:
+        print(
+            f"  WARNING: {len(missing)} requested scope(s) NOT granted — "
+            f"some tools will 403: {', '.join(sorted(missing))}",
+            file=sys.stderr,
+        )
+        sys.exit(3)
 
 
 def _print_usage() -> None:
