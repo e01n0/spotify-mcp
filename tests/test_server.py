@@ -35,12 +35,13 @@ EXPECTED_TOOL_NAMES = {
     "list_devices",
     "add_to_queue",
     "get_queue",
+    "save_tracks_to_library",
 }
 
 
-async def test_server_lists_all_23_tools() -> None:
+async def test_server_lists_all_24_tools() -> None:
     tools = await handle_list_tools()
-    assert len(tools) == 23
+    assert len(tools) == 24
     assert {t.name for t in tools} == EXPECTED_TOOL_NAMES
     # Every tool must have a non-empty description and an inputSchema.
     for t in tools:

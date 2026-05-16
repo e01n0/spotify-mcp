@@ -36,6 +36,7 @@ from spotify_mcp.models import (
     Playlist,
     PreviousTrackInput,
     RemoveTracksFromPlaylistInput,
+    SaveTracksToLibraryInput,
     SearchAlbumsInput,
     SearchArtistsInput,
     SearchPlaylistsInput,
@@ -261,6 +262,13 @@ async def add_to_queue(
     return _text({"queued": inp.uri})
 
 
+async def save_tracks_to_library(
+    client: SpotifyClient, inp: SaveTracksToLibraryInput
+) -> list[types.TextContent]:
+    await client.save_tracks_to_library(inp.track_ids)
+    return _text({"saved": len(inp.track_ids), "track_ids": inp.track_ids})
+
+
 async def get_queue(
     client: SpotifyClient, inp: GetQueueInput
 ) -> list[types.TextContent]:
@@ -314,6 +322,7 @@ TOOLS: dict[str, tuple[type[BaseModel], ToolHandler]] = {
     "list_devices": (ListDevicesInput, list_devices),
     "add_to_queue": (AddToQueueInput, add_to_queue),
     "get_queue": (GetQueueInput, get_queue),
+    "save_tracks_to_library": (SaveTracksToLibraryInput, save_tracks_to_library),
 }
 
 TOOL_DESCRIPTIONS: dict[str, str] = {
@@ -342,4 +351,6 @@ TOOL_DESCRIPTIONS: dict[str, str] = {
     "list_devices": "List the user's Spotify Connect devices.",
     "add_to_queue": "Add a track URI to the playback queue.",
     "get_queue": "Get the playback queue (currently playing + upcoming).",
+    "save_tracks_to_library": "Save up to 50 tracks to the user's Liked Songs in one call. "
+    "Pass track IDs (the bare Spotify ID, not the full URI). Caller batches if >50.",
 }

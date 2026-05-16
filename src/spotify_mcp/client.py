@@ -247,3 +247,15 @@ class SpotifyClient:
 
     async def get_queue(self) -> dict[str, Any]:
         return await self._request("GET", "/me/player/queue")
+
+    # ---- library (Liked Songs) ----
+
+    async def save_tracks_to_library(self, track_ids: list[str]) -> dict[str, Any]:
+        # Spotify accepts up to 50 IDs per call. Caller batches.
+        if not track_ids:
+            return {}
+        if len(track_ids) > 50:
+            raise ValueError(f"save_tracks_to_library: max 50 ids per call, got {len(track_ids)}")
+        return await self._request(
+            "PUT", "/me/tracks", params={"ids": ",".join(track_ids)}
+        )

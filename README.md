@@ -1,6 +1,6 @@
 # spotify-mcp
 
-An MCP server for Spotify — **23 flat tools**, **OAuth 2.0 PKCE** (no `client_secret`), OS-keychain token storage, targeting the **post-February-2026 Spotify Web API surface**.
+An MCP server for Spotify — **24 flat tools**, **OAuth 2.0 PKCE** (no `client_secret`), OS-keychain token storage, targeting the **post-February-2026 Spotify Web API surface**.
 
 Built with `httpx` + `mcp` + `pydantic` + `keyring`. No `spotipy`. No `.cache` files in your CWD.
 
@@ -118,6 +118,8 @@ The auth flow requests these scopes on the consent screen:
 **Playlist (5):** `create_playlist` *(defaults to `public=false`)*, `add_tracks_to_playlist`, `remove_tracks_from_playlist`, `list_my_playlists`, `change_playlist_details`
 
 **Playback (10):** `get_current_playback`, `start_playback` *(routes track URIs to `uris`, album/playlist/artist URIs to `context_uri`)*, `pause_playback`, `next_track`, `previous_track`, `seek`, `set_volume`, `list_devices`, `add_to_queue`, `get_queue`
+
+**Library (1):** `save_tracks_to_library` *(saves up to 50 tracks to Liked Songs per call; requires `user-library-modify` scope)*
 
 ## Troubleshooting
 

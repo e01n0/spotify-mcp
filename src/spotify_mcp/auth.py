@@ -35,6 +35,10 @@ DEFAULT_SCOPES = [
     "playlist-modify-private",
     "playlist-modify-public",
     "user-library-read",
+    # Added 2026-05-16 to support save_tracks_to_library. Originally excluded
+    # from v1 per plan Q#1; brought back when the YT Music import use case
+    # made library writes necessary.
+    "user-library-modify",
 ]
 
 

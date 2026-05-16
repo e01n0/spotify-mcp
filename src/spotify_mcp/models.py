@@ -131,6 +131,11 @@ class GetQueueInput(_Input):
     pass
 
 
+class SaveTracksToLibraryInput(_Input):
+    # Spotify accepts up to 50 IDs per call — caller batches if more.
+    track_ids: list[str] = Field(min_length=1, max_length=50)
+
+
 # ============================================================
 # Response DTOs — minimal, LLM-friendly projections of Spotify API objects
 # ============================================================
@@ -273,4 +278,5 @@ TOOL_INPUTS: dict[str, type[_Input]] = {
     "list_devices": ListDevicesInput,
     "add_to_queue": AddToQueueInput,
     "get_queue": GetQueueInput,
+    "save_tracks_to_library": SaveTracksToLibraryInput,
 }
