@@ -24,6 +24,19 @@ AUTHORIZE_URL = "https://accounts.spotify.com/authorize"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 DEFAULT_TIMEOUT_S = 120.0
 
+# OAuth scopes requested at consent — locked in plan resolved Q#1.
+# user-library-read is included for future tooling; no current tool requires it.
+DEFAULT_SCOPES = [
+    "user-read-playback-state",
+    "user-modify-playback-state",
+    "user-read-currently-playing",
+    "playlist-read-private",
+    "playlist-read-collaborative",
+    "playlist-modify-private",
+    "playlist-modify-public",
+    "user-library-read",
+]
+
 
 class AuthorizationError(Exception):
     """PKCE authorization flow failed (timeout, user denial, network error)."""
