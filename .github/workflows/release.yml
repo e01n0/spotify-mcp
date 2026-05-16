@@ -1,0 +1,38 @@
+name: Release
+
+# Tag-triggered, never auto-creates tags. PyPI publish intentionally stubbed
+# until v1 — until then this workflow only validates that a tagged commit
+# builds cleanly.
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Build sdist + wheel
+        run: uv build
+
+      - name: Inspect dist/
+        run: ls -la dist/
+
+      # PyPI publish wired here once v1 ships. Until then, artifacts are
+      # uploaded for inspection but not released.
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
